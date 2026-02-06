@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "HackNSlashAthon",
+			"Path": "..\\Source\\HackNSlashAthon.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "HackNSlashAthonEditor",
+			"Path": "..\\Source\\HackNSlashAthonEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

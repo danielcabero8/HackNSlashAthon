@@ -1,0 +1,15 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\unrealeditor\\inc\\hacknslashathon\\uht\\hacknslashathonplayercontroller.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\x64\\hacknslashathoneditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\hacknslashathon\\definitions.hacknslashathon.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathonplayercontroller.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\unrealeditor\\inc\\hacknslashathon\\uht\\hacknslashathonplayercontroller.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

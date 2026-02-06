@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\HackNSlashAthon.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\HackNSlashAthon.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\HackNSlashAthonEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\HackNSlashAthon">
+      <UniqueIdentifier>{4B63F29E-A57D-3170-8323-07A7BF2D4EF6}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\HackNSlashAthon\HackNSlashAthon.Build.cs">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthon.cpp">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthon.h">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthonCharacter.cpp">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthonCharacter.h">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthonGameMode.cpp">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthonGameMode.h">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthonPlayerController.cpp">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\HackNSlashAthon\HackNSlashAthonPlayerController.h">
+      <Filter>Source\HackNSlashAthon</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,32 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathongamemode.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\x64\\hacknslashathoneditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\hacknslashathon\\definitions.hacknslashathon.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathongamemode.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamemodebase.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\engine\\serverstatreplicator.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\serverstatreplicator.generated.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gamemodebase.generated.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\unrealeditor\\inc\\hacknslashathon\\uht\\hacknslashathongamemode.generated.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathonplayercontroller.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\unrealeditor\\inc\\hacknslashathon\\uht\\hacknslashathonplayercontroller.generated.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathoncharacter.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\net\\core\\public\\net\\core\\nettoken\\nettokenexportcontext.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\experimental\\iris\\core\\public\\iris\\serialization\\irisobjectreferencepackagemap.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\iriscore\\uht\\irisobjectreferencepackagemap.generated.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\charactermovementreplication.generated.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\rootmotionsource.generated.h",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\character.generated.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\unrealeditor\\inc\\hacknslashathon\\uht\\hacknslashathoncharacter.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

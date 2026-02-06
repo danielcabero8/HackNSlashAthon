@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathon.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\x64\\hacknslashathoneditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\hacknslashathon\\definitions.hacknslashathon.h",
+            "c:\\users\\salva\\documents\\unreal projects\\hacknslashathon\\hacknslashathon\\source\\hacknslashathon\\hacknslashathon.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

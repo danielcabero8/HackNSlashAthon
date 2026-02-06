@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\salva\\Documents\\Unreal Projects\\HackNSlashAthon\\HackNSlashAthon\\Source\\HackNSlashAthon\\HackNSlashAthon.Build.cs",
+		"C:\\Users\\salva\\Documents\\Unreal Projects\\HackNSlashAthon\\HackNSlashAthon\\Source\\HackNSlashAthon.Target.cs",
+		"C:\\Users\\salva\\Documents\\Unreal Projects\\HackNSlashAthon\\HackNSlashAthon\\Source\\HackNSlashAthonEditor.Target.cs"
+	],
+	"EngineVersion": "5.5.4"
+}
