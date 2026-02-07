@@ -25,14 +25,25 @@ AHackNSlashAthonGameMode::AHackNSlashAthonGameMode()
 	}
 }
 
-void AHackNSlashAthonGameMode::PostInitializeComponents()
+TSubclassOf<AActor> AHackNSlashAthonGameMode::GetActorToSpawn(EHSAEntityType EntityType) const
 {
-	Super::PostInitializeComponents();
-
-	// Initialize ActorSpawnDataAsset after all components are done
-	if (ActorSpawnDataAssetClass != nullptr)
+	auto ActorSpawnDataAsset = GetActorSpawnDataAsset();
+	if (ActorSpawnDataAsset == nullptr)
 	{
-		ActorSpawnDataAsset = NewObject<UHSAActorSpawnDataAsset>(this, ActorSpawnDataAssetClass);
+		return nullptr;
 	}
 
+	auto result = ActorSpawnDataAsset->SpawnConfig.FindByPredicate(
+		[EntityType](const FHSASpawnConfigurationDataAssetItem& Item) 
+		{
+			return Item.TypeID == EntityType;
+		}
+	); 
+
+	if (result != nullptr)
+	{
+		return result->SpawneableActor;
+	}
+
+	return nullptr;
 }

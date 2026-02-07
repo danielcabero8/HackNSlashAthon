@@ -15,16 +15,16 @@ class AHackNSlashAthonGameMode : public AGameModeBase
 public:
 	AHackNSlashAthonGameMode();
 
-	// override AGameModeBase
-	void PostInitializeComponents() override;
-
 	UFUNCTION(BlueprintPure)
 	const UHSAActorSpawnDataAsset* GetActorSpawnDataAsset() const;
+
+
+	TSubclassOf<AActor> GetActorToSpawn(EHSAEntityType EntityType) const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UHSAActorSpawnDataAsset> ActorSpawnDataAssetClass = nullptr;
-	
+
 };
 
 inline const UHSAActorSpawnDataAsset*  AHackNSlashAthonGameMode::GetActorSpawnDataAsset() const

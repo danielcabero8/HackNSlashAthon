@@ -1,5 +1,5 @@
 ﻿#include "HSALevelGeneration.h"
-
+#include "HSAGameLoop.h"
 #include "HSAGameInstance.h"
 
 void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
@@ -24,6 +24,8 @@ void UHSALevelGeneration::GenerateLevel()
 		const int value = FMath::RandRange(0, 1);
 		CurrentLevelMap.Add(value);
 	}
-	
+
+	CurrentLevelMap[8] = static_cast<int32>(EHSAEntityType::EnemyType1);
+	CurrentLevelMap[16] = static_cast<int32>(EHSAEntityType::EnemyType1);
 	OnLevelGenerated.Broadcast();
 }
