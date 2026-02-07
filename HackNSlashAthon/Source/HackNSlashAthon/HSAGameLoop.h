@@ -6,21 +6,21 @@ UENUM(BlueprintType)
 enum class EHSAEntityType : uint8
 {
 	//general
-	GENERAL				= 0,
+	GENERAL				= 0 UMETA(Hidden),
 	Hole				= 1,
 	Floor				= 2,
 	PlayerStart			= 3,
 
 	//enemies
-	ENEMIES				= 10,
+	ENEMIES				= 10 UMETA(Hidden),
 	EnemyType1			= 11,
 
 	//traps
-	TRAPS				= 20,
+	TRAPS				= 20 UMETA(Hidden),
 	Spikes				= 21,
 
 	//Environment
-	ENVIRONMENT			= 30,
+	ENVIRONMENT			= 30 UMETA(Hidden),
 	Column				= 31,
 };
 

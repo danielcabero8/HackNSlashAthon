@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "HSAGameLoop.h"
 #include "HSAActorSpawnDataAsset.generated.h"
 
 
@@ -13,7 +14,7 @@ struct FHSASpawnConfigurationDataAssetItem {
 public:
 	
 	UPROPERTY(EditDefaultsOnly)
-	uint32 ActorId;
+	EHSAEntityType TypeID = EHSAEntityType::Floor;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> SpawneableActor;

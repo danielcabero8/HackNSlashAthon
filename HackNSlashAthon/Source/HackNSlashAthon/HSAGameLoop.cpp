@@ -128,7 +128,7 @@ void UHSAGameLoop::OnLevelGenerated()
 	}
 
 	// Reset the level data
-	GameLevelData = FGameLevelData();
+	GameLevelData = FHSAGameLevelData();
 
 	// Update the game instance with the new level map
 	if ( UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance()))
@@ -140,7 +140,7 @@ void UHSAGameLoop::OnLevelGenerated()
 		//register the amount of enemies in this level
 		for (int i = 0; i < LevelMap.Num(); i++)
 		{
-			if (IsEnemy(static_cast<EEntityType>(LevelMap[i])))
+			if (IsEnemy(static_cast<EHSAEntityType>(LevelMap[i])))
 			{
 				GameLevelData.EnemiesAlive++;
 			}
@@ -154,17 +154,17 @@ UHSALevelGeneration* UHSAGameLoop::GetLevelGenerationSubsystem() const
 }
 
 
-bool UHSAGameLoop::IsEnemy(const EEntityType EntityType)
+bool UHSAGameLoop::IsEnemy(const EHSAEntityType EntityType)
 {
-	return EntityType > EEntityType::ENEMIES && EntityType < EEntityType::TRAPS;
+	return EntityType > EHSAEntityType::ENEMIES && EntityType < EHSAEntityType::TRAPS;
 }
 
-bool UHSAGameLoop::IsEnvironment(const EEntityType EntityType)
+bool UHSAGameLoop::IsEnvironment(const EHSAEntityType EntityType)
 {
-	return EntityType > EEntityType::ENVIRONMENT;
+	return EntityType > EHSAEntityType::ENVIRONMENT;
 }
 
-bool UHSAGameLoop::IsTrap(const EEntityType EntityType)
+bool UHSAGameLoop::IsTrap(const EHSAEntityType EntityType)
 {
-	return EntityType > EEntityType::TRAPS && EntityType < EEntityType::ENVIRONMENT;
+	return EntityType > EHSAEntityType::TRAPS && EntityType < EHSAEntityType::ENVIRONMENT;
 }

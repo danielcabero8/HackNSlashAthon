@@ -19,8 +19,8 @@ void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
 			continue;
 		}
 
-		const EEntityType EntityType = static_cast<EEntityType>(LevelMap[i]);
-		const bool IsHole = EntityType == EEntityType::Hole;
+		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i]);
+		const bool IsHole = EntityType == EHSAEntityType::Hole;
 		ECollisionEnabled::Type Collision = !IsHole ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 		staticMeshComp->SetVisibility(!IsHole);
 		staticMeshComp->SetCollisionEnabled(Collision);
