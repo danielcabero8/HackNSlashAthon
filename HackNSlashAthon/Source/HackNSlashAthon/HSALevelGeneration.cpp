@@ -107,14 +107,19 @@ void UHSALevelGeneration::GenerateLevel()
 	
 		for ( int i = 0; i < mapSize; i++ )
 		{
-			const int value = FMath::RandRange(0, 1);
+			const int value = FMath::RandRange(0, 10);
+			const int32 entityId = value < 2 ? 1 : 2;
+			
 			FHSAMapTileContent entry;
 			entry.EntityId = value;
 			MapTileContents.Add(entry);
 		}
 
+		MapTileContents[0].EntityId = static_cast<int32>(EHSAEntityType::PlayerStart);
 		MapTileContents[8].EntityId = static_cast<int32>(EHSAEntityType::EnemyType1);
 		MapTileContents[16].EntityId = static_cast<int32>(EHSAEntityType::EnemyType1);
+		MapTileContents[24].EntityId = static_cast<int32>(EHSAEntityType::Spikes);
+		MapTileContents[36].EntityId = static_cast<int32>(EHSAEntityType::Spikes);
 
 		// Broadcast the raw response text to listeners
 		OnLevelGenerated.Broadcast();
