@@ -24,3 +24,15 @@ AHackNSlashAthonGameMode::AHackNSlashAthonGameMode()
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
 }
+
+void AHackNSlashAthonGameMode::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// Initialize ActorSpawnDataAsset after all components are done
+	if (ActorSpawnDataAssetClass != nullptr)
+	{
+		ActorSpawnDataAsset = NewObject<UHSAActorSpawnDataAsset>(this, ActorSpawnDataAssetClass);
+	}
+
+}

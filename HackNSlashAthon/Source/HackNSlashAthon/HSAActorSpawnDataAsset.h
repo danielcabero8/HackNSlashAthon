@@ -8,15 +8,15 @@
 #include "HSAActorSpawnDataAsset.generated.h"
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FHSASpawnConfigurationDataAssetItem {
 	GENERATED_BODY()
 public:
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EHSAEntityType TypeID = EHSAEntityType::Floor;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<AActor> SpawneableActor;
 
 };
@@ -24,14 +24,14 @@ public:
 /**
  * 
  */
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(Blueprintable, BlueprintType, Abstract)	
 class HACKNSLASHATHON_API UHSAActorSpawnDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FHSASpawnConfigurationDataAssetItem> SpawnConfig;
 	
 };
