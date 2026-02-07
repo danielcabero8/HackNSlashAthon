@@ -44,10 +44,19 @@ struct FHSAGameLevelData
 {
 	GENERATED_BODY()
 
+	UPROPERTY(blueprintReadOnly)
 	int CurrentLives = 3;
+
+	UPROPERTY(blueprintReadOnly)
 	int EnemiesKilled = 0;
+
+	UPROPERTY(blueprintReadOnly)
 	int EnemiesAlive = 0;
+
+	UPROPERTY(blueprintReadOnly)
 	int HitsTaken = 0;
+
+	UPROPERTY(blueprintReadOnly)
 	float TimeElapsed = 0.f;
 };
 
@@ -59,7 +68,10 @@ class UHSAGameLoop : public UGameInstanceSubsystem, public FTickableGameObject
 	GENERATED_BODY()
 public:
 
+	UPROPERTY(BlueprintReadOnly)
 	FHSAGameLevelData GameLevelData;
+
+	UPROPERTY(BlueprintReadOnly)
 	int CurrentDungeonLevel = 1;
 
 	// --- FTickableGameObject Overrides ---
