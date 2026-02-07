@@ -75,6 +75,9 @@ void UHSAGameLoop::EnemyKilled(AActor* Enemy)
 {
 	GameLevelData.EnemiesAlive--;
 	GameLevelData.EnemiesKilled++;
+	
+	Enemy->Destroy();
+
 	DataUpdated();
 }
 
