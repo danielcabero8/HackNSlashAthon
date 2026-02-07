@@ -1,5 +1,7 @@
 ﻿#include "HSAGameInstance.h"
 
+#include "HSAGameLoop.h"
+
 void UHSAGameInstance::RegisterTiles( TArray<AStaticMeshActor*> InTileNames, int InRows, int InColumns)
 {
 	Tiles = InTileNames;
@@ -11,17 +13,33 @@ void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
 {
 	for (int i = 0; i < LevelMap.Num(); i++)
 	{
-		ECollisionEnabled::Type Collision = LevelMap[i] == 1 ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
-
-		if ( UStaticMeshComponent* staticMeshComp = Tiles[i]->GetStaticMeshComponent())
+		UStaticMeshComponent* staticMeshComp = Tiles[i]->GetStaticMeshComponent();
+		if ( !staticMeshComp )
 		{
-			staticMeshComp->SetVisibility(LevelMap[i] == 1);
-			staticMeshComp->SetCollisionEnabled(Collision);
+			continue;
+		}
+
+		const EEntityType EntityType = static_cast<EEntityType>(LevelMap[i]);
+		const bool IsHole = EntityType == EEntityType::Hole;
+		ECollisionEnabled::Type Collision = !IsHole ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
+		staticMeshComp->SetVisibility(!IsHole);
+		staticMeshComp->SetCollisionEnabled(Collision);
+
+		//todo: Salva - Hook up spawning all actor types and initialize them
+		
+		if (UHSAGameLoop::IsEnemy(EntityType))
+		{
+			//FActorSpawnParameters SpawnParams;
+			//GetWorld()->SpawnActor();
 		}
 	}
 }
 
 void UHSAGameInstance::CleanLevel()
 {
-	//
+	for (auto Actor : SpawnedActors)
+	{
+		Actor->Destroy();
+	}
+	SpawnedActors.Empty();
 }

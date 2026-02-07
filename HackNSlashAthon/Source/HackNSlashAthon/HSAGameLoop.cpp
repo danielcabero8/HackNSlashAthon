@@ -55,6 +55,21 @@ void UHSAGameLoop::SetState(EHSAGameState state)
 		OnGameOver();
 		break;
 	}
+
+	OnGameStateChanged.Broadcast(CurrentState);
+}
+
+void UHSAGameLoop::HitPlayer()
+{
+	GameLevelData.CurrentLives--;
+	DataUpdated();
+}
+
+void UHSAGameLoop::EnemyKilled(AActor* Enemy)
+{
+	GameLevelData.EnemiesAlive--;
+	GameLevelData.EnemiesKilled++;
+	DataUpdated();
 }
 
 void UHSAGameLoop::OnLoadingLevel()
@@ -75,12 +90,33 @@ void UHSAGameLoop::OnPlayingLevel()
 
 void UHSAGameLoop::OnTransitioningOut()
 {
+	UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance());
+	if ( !ensure(gameInstance))
+	{
+		return;
+	}
+
+	gameInstance->CleanLevel();
+
+	//IMPORTANT: Transition to LoadingLevel happens in Map's LevelBP
 }
 
 void UHSAGameLoop::OnGameOver()
 {
 	//for now just loop
-	SetState(EHSAGameState::LoadingLevel);
+	SetState(EHSAGameState::TransitioningOut);
+}
+
+void UHSAGameLoop::DataUpdated()
+{
+	if ( GameLevelData.CurrentLives <= 0 )
+	{
+		SetState(EHSAGameState::GameOver);
+	}
+	else if ( GameLevelData.EnemiesAlive <= 0 )
+	{
+		SetState(EHSAGameState::LevelCompleted);
+	}
 }
 
 void UHSAGameLoop::OnLevelGenerated()
@@ -91,14 +127,44 @@ void UHSAGameLoop::OnLevelGenerated()
 		return ;
 	}
 
+	// Reset the level data
+	GameLevelData = FGameLevelData();
+
 	// Update the game instance with the new level map
 	if ( UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance()))
 	{
-		gameInstance->PopulateLevel(LevelGen->GetCurrentLevelMap());
+		//spawn entities and floor
+		auto LevelMap = LevelGen->GetCurrentLevelMap();
+		gameInstance->PopulateLevel(LevelMap);
+
+		//register the amount of enemies in this level
+		for (int i = 0; i < LevelMap.Num(); i++)
+		{
+			if (IsEnemy(static_cast<EEntityType>(LevelMap[i])))
+			{
+				GameLevelData.EnemiesAlive++;
+			}
+		}
 	}
 }
 
 UHSALevelGeneration* UHSAGameLoop::GetLevelGenerationSubsystem() const
 {
 	return GetGameInstance()->GetSubsystem<UHSALevelGeneration>();
+}
+
+
+bool UHSAGameLoop::IsEnemy(const EEntityType EntityType)
+{
+	return EntityType > EEntityType::ENEMIES && EntityType < EEntityType::TRAPS;
+}
+
+bool UHSAGameLoop::IsEnvironment(const EEntityType EntityType)
+{
+	return EntityType > EEntityType::ENVIRONMENT;
+}
+
+bool UHSAGameLoop::IsTrap(const EEntityType EntityType)
+{
+	return EntityType > EEntityType::TRAPS && EntityType < EEntityType::ENVIRONMENT;
 }

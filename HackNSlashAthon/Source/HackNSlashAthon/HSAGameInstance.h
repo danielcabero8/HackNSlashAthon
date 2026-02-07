@@ -17,6 +17,9 @@ class UHSAGameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
 	int Rows, Columns;
+	
+	UPROPERTY()
+	TArray<AActor*> SpawnedActors;
 
 	UPROPERTY()
 	TArray<AStaticMeshActor*> Tiles;
