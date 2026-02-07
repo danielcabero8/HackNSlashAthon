@@ -7,6 +7,8 @@
 #include "HSAActorSpawnDataAsset.h"
 #include "HackNSlashAthonGameMode.generated.h"
 
+struct FHSASpawnConfigurationDataAssetItem;
+
 UCLASS(minimalapi)
 class AHackNSlashAthonGameMode : public AGameModeBase
 {
@@ -19,7 +21,7 @@ public:
 	const UHSAActorSpawnDataAsset* GetActorSpawnDataAsset() const;
 
 
-	TSubclassOf<AActor> GetActorToSpawn(EHSAEntityType EntityType) const;
+	const FHSASpawnConfigurationDataAssetItem* GetSpawnConfiguration(EHSAEntityType EntityType) const;
 	bool UseRemoteAPIGeneration() const { return bUseRemoteAPIGeneration; }
 
 protected:
@@ -32,6 +34,6 @@ protected:
 
 inline const UHSAActorSpawnDataAsset*  AHackNSlashAthonGameMode::GetActorSpawnDataAsset() const
 {
-	return ActorSpawnDataAssetClass->GetDefaultObject<UHSAActorSpawnDataAsset>();
+	return ActorSpawnDataAssetClass!= nullptr ? ActorSpawnDataAssetClass->GetDefaultObject<UHSAActorSpawnDataAsset>() : nullptr;
 }
 

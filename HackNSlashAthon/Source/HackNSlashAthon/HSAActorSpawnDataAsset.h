@@ -19,6 +19,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<AActor> SpawneableActor;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float ActorOffsetZ = 0.0;
 };
 
 /**

@@ -3,9 +3,18 @@
 
 #include "HSAAICharacter.h"
 
+#include "Components/CapsuleComponent.h"
+
 // Sets default values
-AHSAAICharacter::AHSAAICharacter()
+AHSAAICharacter::AHSAAICharacter() : Super()
 {
+
+	if (auto AICapsuleComponent = GetCapsuleComponent()) {
+		auto CapsuleRelativeLocation = AICapsuleComponent->GetRelativeLocation();
+
+		CapsuleRelativeLocation.Z = -AICapsuleComponent->GetScaledCapsuleHalfHeight();
+		AICapsuleComponent->SetRelativeLocation(CapsuleRelativeLocation);
+	}
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 

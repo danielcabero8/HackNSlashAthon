@@ -25,7 +25,7 @@ AHackNSlashAthonGameMode::AHackNSlashAthonGameMode()
 	}
 }
 
-TSubclassOf<AActor> AHackNSlashAthonGameMode::GetActorToSpawn(EHSAEntityType EntityType) const
+const FHSASpawnConfigurationDataAssetItem* AHackNSlashAthonGameMode::GetSpawnConfiguration(EHSAEntityType EntityType) const
 {
 	auto ActorSpawnDataAsset = GetActorSpawnDataAsset();
 	if (ActorSpawnDataAsset == nullptr)
@@ -40,10 +40,5 @@ TSubclassOf<AActor> AHackNSlashAthonGameMode::GetActorToSpawn(EHSAEntityType Ent
 		}
 	); 
 
-	if (result != nullptr)
-	{
-		return result->SpawneableActor;
-	}
-
-	return nullptr;
+	return result;
 }
