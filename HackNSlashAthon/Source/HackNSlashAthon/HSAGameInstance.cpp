@@ -1,5 +1,7 @@
 ﻿#include "HSAGameInstance.h"
 
+#include "CoreMinimal.h"
+#include "HackNSlashAthonGameMode.h"
 #include "HSAGameLoop.h"
 
 void UHSAGameInstance::RegisterTiles( TArray<AStaticMeshActor*> InTileNames, int InRows, int InColumns)
@@ -19,8 +21,8 @@ void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
 			continue;
 		}
 
-		const EEntityType EntityType = static_cast<EEntityType>(LevelMap[i]);
-		const bool IsHole = EntityType == EEntityType::Hole;
+		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i]);
+		const bool IsHole = EntityType == EHSAEntityType::Hole;
 		ECollisionEnabled::Type Collision = !IsHole ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 		staticMeshComp->SetVisibility(!IsHole);
 		staticMeshComp->SetCollisionEnabled(Collision);
@@ -29,8 +31,19 @@ void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
 		
 		if (UHSAGameLoop::IsEnemy(EntityType))
 		{
-			//FActorSpawnParameters SpawnParams;
-			//GetWorld()->SpawnActor();
+			AHackNSlashAthonGameMode* CurrentGameMode = GetWorld()->GetAuthGameMode<AHackNSlashAthonGameMode>();
+			if (CurrentGameMode != nullptr) {
+				return;
+			}
+
+
+			TSubclassOf<AActor> ActorToSpawn = CurrentGameMode->GetActorToSpawn(EntityType);
+			
+			FActorSpawnParameters Params;			
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
+			AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, Tiles[i]->GetActorLocation(), FRotator::ZeroRotator, Params);
+
 		}
 	}
 }

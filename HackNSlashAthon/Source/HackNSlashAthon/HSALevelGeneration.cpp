@@ -1,5 +1,5 @@
-﻿#include "HSALevelGeneration.h"
-
+#include "HSALevelGeneration.h"
+#include "HSAGameLoop.h"
 #include "HSAGameInstance.h"
 #include "HSAGameLoop.h"
 #include "HttpModule.h"
@@ -95,9 +95,24 @@ void UHSALevelGeneration::GenerateLevel()
 	{
 		return;
 	}
+
+	//debug version
+	const int32 mapSize = gameInstance->Columns * gameInstance->Rows;
+	CurrentLevelMap = TArray<int32>();
+	CurrentLevelMap.Reserve(mapSize);
 	
+	for ( int i = 0; i < mapSize; i++ )
+	{
+		const int value = FMath::RandRange(0, 1);
+		CurrentLevelMap.Add(value);
+	}
+
+	CurrentLevelMap[8] = static_cast<int32>(EHSAEntityType::EnemyType1);
+	CurrentLevelMap[16] = static_cast<int32>(EHSAEntityType::EnemyType1);
+	
+	//real version
 	const int32 CompletedLevel = gameLoop->CurrentDungeonLevel;
-	const FGameLevelData& CompletedLevelData = gameLoop->GameLevelData;
+	const FHSAGameLevelData& CompletedLevelData = gameLoop->GameLevelData;
 
 	// Build user prompt JSON
 	TSharedPtr<FJsonObject> PromptJson = MakeShareable(new FJsonObject());

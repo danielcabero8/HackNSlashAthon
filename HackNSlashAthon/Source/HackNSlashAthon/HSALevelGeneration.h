@@ -58,13 +58,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "LevelGeneration|Claude")
 	FString SystemPrompt;
 
+protected:
 	/** Parsed map tile contents from the last Claude response. */
 	UPROPERTY(BlueprintReadOnly, Category = "LevelGeneration|Claude")
 	TArray<FHSAMapTileContent> MapTileContents;
-
-private:
+	
 	TArray<int32> CurrentLevelMap;
-
+	
 	/** HTTP response callback bound to each request. */
 	void OnClaudeHttpResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 };

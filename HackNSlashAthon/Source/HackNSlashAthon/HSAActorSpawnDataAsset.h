@@ -4,18 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "HSAGameLoop.h"
 #include "HSAActorSpawnDataAsset.generated.h"
 
 
-USTRUCT()
-struct FSpawnConfigurationDataAssetItem {
+USTRUCT(BlueprintType)
+struct FHSASpawnConfigurationDataAssetItem {
 	GENERATED_BODY()
 public:
 	
-	UPROPERTY(EditDefaultsOnly)
-	uint32 ActorId;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EHSAEntityType TypeID = EHSAEntityType::Floor;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<AActor> SpawneableActor;
 
 };
@@ -23,14 +24,14 @@ public:
 /**
  * 
  */
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(Blueprintable, BlueprintType, Abstract)	
 class HACKNSLASHATHON_API UHSAActorSpawnDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditDefaultsOnly)
-	TArray<FSpawnConfigurationDataAssetItem> SpawnConfig;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FHSASpawnConfigurationDataAssetItem> SpawnConfig;
 	
 };
