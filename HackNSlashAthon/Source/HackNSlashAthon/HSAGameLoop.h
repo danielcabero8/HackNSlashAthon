@@ -3,7 +3,7 @@
 #include "HSAGameLoop.generated.h"
 
 UENUM(BlueprintType)
-enum class EEntityType : uint8
+enum class EHSAEntityType : uint8
 {
 	//general
 	GENERAL				= 0,
@@ -38,7 +38,7 @@ enum class EHSAGameState : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FGameLevelData
+struct FHSAGameLevelData
 {
 	GENERATED_BODY()
 
@@ -56,7 +56,7 @@ class UHSAGameLoop : public UGameInstanceSubsystem, public FTickableGameObject
 	GENERATED_BODY()
 public:
 
-	FGameLevelData GameLevelData;
+	FHSAGameLevelData GameLevelData;
 	int CurrentDungeonLevel = 1;
 
 	// --- FTickableGameObject Overrides ---
@@ -89,9 +89,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EnemyKilled(AActor* Enemy);
 
-	static bool IsEnemy(const EEntityType EntityType);
-	static bool IsEnvironment(const EEntityType EntityType);
-	static bool IsTrap(const EEntityType EntityType);
+	static bool IsEnemy(const EHSAEntityType EntityType);
+	static bool IsEnvironment(const EHSAEntityType EntityType);
+	static bool IsTrap(const EHSAEntityType EntityType);
 	
 private:
 	EHSAGameState CurrentState;

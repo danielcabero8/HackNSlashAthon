@@ -8,7 +8,7 @@
 
 
 USTRUCT()
-struct FSpawnConfigurationDataAssetItem {
+struct FHSASpawnConfigurationDataAssetItem {
 	GENERATED_BODY()
 public:
 	
@@ -31,6 +31,6 @@ class HACKNSLASHATHON_API UHSAActorSpawnDataAsset : public UDataAsset
 public:
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FSpawnConfigurationDataAssetItem> SpawnConfig;
+	TArray<FHSASpawnConfigurationDataAssetItem> SpawnConfig;
 	
 };
