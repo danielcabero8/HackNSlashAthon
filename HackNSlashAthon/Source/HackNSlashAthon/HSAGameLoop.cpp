@@ -148,7 +148,7 @@ void UHSAGameLoop::OnLevelGenerated()
 		//register the amount of enemies in this level
 		for (int i = 0; i < LevelMap.Num(); i++)
 		{
-			if (IsEnemy(static_cast<EHSAEntityType>(LevelMap[i])))
+			if (IsEnemy(static_cast<EHSAEntityType>(LevelMap[i].EntityId)))
 			{
 				GameLevelData.EnemiesAlive++;
 			}

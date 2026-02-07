@@ -34,8 +34,7 @@ public:
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	const TArray<int32>& GetCurrentLevelMap() const { return CurrentLevelMap; }
-	const TArray<FHSAMapTileContent>& GetCurrentLevelMapNEW() const { return MapTileContents; }
+	const TArray<FHSAMapTileContent>& GetCurrentLevelMap() const { return MapTileContents; }
 	void GenerateLevel();
 
 	/**
@@ -62,8 +61,6 @@ protected:
 	/** Parsed map tile contents from the last Claude response. */
 	UPROPERTY(BlueprintReadOnly, Category = "LevelGeneration|Claude")
 	TArray<FHSAMapTileContent> MapTileContents;
-	
-	TArray<int32> CurrentLevelMap;
 	
 	/** HTTP response callback bound to each request. */
 	void OnClaudeHttpResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);

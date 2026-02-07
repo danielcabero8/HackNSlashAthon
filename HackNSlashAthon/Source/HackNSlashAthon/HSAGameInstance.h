@@ -28,7 +28,7 @@ public:
 	void RegisterTiles( TArray<AStaticMeshActor*> InTileNames, int InRows, int InColumns);
 
 	UFUNCTION(BlueprintCallable)
-	void PopulateLevel(const TArray<int32>& LevelMap);
+	void PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap);
 
 	//remove all actor generated from the previous level
 	UFUNCTION(BlueprintCallable)

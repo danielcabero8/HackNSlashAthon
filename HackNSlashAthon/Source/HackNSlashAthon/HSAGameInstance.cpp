@@ -9,9 +9,23 @@ void UHSAGameInstance::RegisterTiles( TArray<AStaticMeshActor*> InTileNames, int
 	Tiles = InTileNames;
 	Rows = InRows;
 	Columns = InColumns;
+
+	auto GetTrailingNumber = [](const FString& Label) -> int32
+	{
+		const int32 LastNonDigit = Label.FindLastCharByPredicate([](TCHAR C) { return !FChar::IsDigit(C); });
+		const FString NumberPart = Label.RightChop(LastNonDigit + 1);
+		return FCString::Atoi(*NumberPart);
+	};
+
+	Tiles.Sort([&GetTrailingNumber](const AStaticMeshActor& A, const AStaticMeshActor& B) -> bool
+	{
+		const int32 NumA = GetTrailingNumber(A.GetActorLabel());
+		const int32 NumB = GetTrailingNumber(B.GetActorLabel());
+		return NumA < NumB;
+	});
 }
 
-void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
+void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 {
 	for (int i = 0; i < LevelMap.Num(); i++)
 	{
@@ -21,7 +35,7 @@ void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
 			continue;
 		}
 
-		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i]);
+		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i].EntityId);
 		const bool IsHole = EntityType == EHSAEntityType::Hole;
 		ECollisionEnabled::Type Collision = !IsHole ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 		staticMeshComp->SetVisibility(!IsHole);

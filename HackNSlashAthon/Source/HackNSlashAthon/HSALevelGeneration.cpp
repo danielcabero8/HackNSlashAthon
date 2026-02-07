@@ -1,8 +1,11 @@
 #include "HSALevelGeneration.h"
+
+#include "HackNSlashAthonGameMode.h"
 #include "HSAGameLoop.h"
 #include "HSAGameInstance.h"
 #include "HSAGameLoop.h"
 #include "HttpModule.h"
+#include "GameFramework/GameStateBase.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonSerializer.h"
@@ -85,48 +88,57 @@ void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 void UHSALevelGeneration::GenerateLevel()
 {
 	UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetWorld()->GetGameInstance());
-	if ( !ensure(gameInstance))
-	{
-		return;
-	}
+	UHSAGameLoop* gameLoop = gameInstance ? gameInstance->GetSubsystem<UHSAGameLoop>() : nullptr;
+	UWorld* World = GetWorld();
+	AGameStateBase* GameState = World ? World->GetGameState() : nullptr;
+	AHackNSlashAthonGameMode* CurrentGameMode = World->GetAuthGameMode<AHackNSlashAthonGameMode>();
 
-	UHSAGameLoop* gameLoop = gameInstance->GetSubsystem<UHSAGameLoop>();
-	if ( !ensure(gameLoop))
+	if ( !ensure(gameInstance) || !ensure(CurrentGameMode) || !ensure(gameLoop))
 	{
 		return;
 	}
 
 	//debug version
-	const int32 mapSize = gameInstance->Columns * gameInstance->Rows;
-	CurrentLevelMap = TArray<int32>();
-	CurrentLevelMap.Reserve(mapSize);
-	
-	for ( int i = 0; i < mapSize; i++ )
+	if (!CurrentGameMode->UseRemoteAPIGeneration())
 	{
-		const int value = FMath::RandRange(0, 1);
-		CurrentLevelMap.Add(value);
-	}
-
-	CurrentLevelMap[8] = static_cast<int32>(EHSAEntityType::EnemyType1);
-	CurrentLevelMap[16] = static_cast<int32>(EHSAEntityType::EnemyType1);
+		const int32 mapSize = gameInstance->Columns * gameInstance->Rows;
+		MapTileContents = TArray<FHSAMapTileContent>();
+		MapTileContents.Reserve(mapSize);
 	
-	//real version
-	const int32 CompletedLevel = gameLoop->CurrentDungeonLevel;
-	const FHSAGameLevelData& CompletedLevelData = gameLoop->GameLevelData;
+		for ( int i = 0; i < mapSize; i++ )
+		{
+			const int value = FMath::RandRange(0, 1);
+			FHSAMapTileContent entry;
+			entry.EntityId = value;
+			MapTileContents.Add(entry);
+		}
 
-	// Build user prompt JSON
-	TSharedPtr<FJsonObject> PromptJson = MakeShareable(new FJsonObject());
-	PromptJson->SetNumberField(TEXT("CompletedLevel"), CompletedLevel);
-	PromptJson->SetNumberField(TEXT("Time"), CompletedLevelData.TimeElapsed);
-	PromptJson->SetNumberField(TEXT("HitsTaken"), CompletedLevelData.HitsTaken);
-	PromptJson->SetNumberField(TEXT("Rows"), gameInstance->Rows);
-	PromptJson->SetNumberField(TEXT("Columns"), gameInstance->Columns);
+		MapTileContents[8].EntityId = static_cast<int32>(EHSAEntityType::EnemyType1);
+		MapTileContents[16].EntityId = static_cast<int32>(EHSAEntityType::EnemyType1);
 
-	FString PromptString;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PromptString);
-	FJsonSerializer::Serialize(PromptJson.ToSharedRef(), Writer);
+		// Broadcast the raw response text to listeners
+		OnLevelGenerated.Broadcast();
+	}
+	//online version
+	else
+	{
+		const int32 CompletedLevel = gameLoop->CurrentDungeonLevel;
+		const FHSAGameLevelData& CompletedLevelData = gameLoop->GameLevelData;
 
-	SendClaudeRequest(PromptString);
+		// Build user prompt JSON
+		TSharedPtr<FJsonObject> PromptJson = MakeShareable(new FJsonObject());
+		PromptJson->SetNumberField(TEXT("CompletedLevel"), CompletedLevel);
+		PromptJson->SetNumberField(TEXT("Time"), CompletedLevelData.TimeElapsed);
+		PromptJson->SetNumberField(TEXT("HitsTaken"), CompletedLevelData.HitsTaken);
+		PromptJson->SetNumberField(TEXT("Rows"), gameInstance->Rows);
+		PromptJson->SetNumberField(TEXT("Columns"), gameInstance->Columns);
+
+		FString PromptString;
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PromptString);
+		FJsonSerializer::Serialize(PromptJson.ToSharedRef(), Writer);
+
+		SendClaudeRequest(PromptString);
+	}
 }
 
 void UHSALevelGeneration::SendClaudeRequest(const FString& Prompt, int32 MaxTokens)
