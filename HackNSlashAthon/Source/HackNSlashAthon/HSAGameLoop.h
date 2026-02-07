@@ -48,6 +48,7 @@ struct FGameLevelData
 	int EnemiesKilled = 0;
 	int EnemiesAlive = 0;
 	int HitsTaken = 0;
+	float TimeElapsed = 0.f;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStateChanged, EHSAGameState, NewState);

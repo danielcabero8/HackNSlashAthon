@@ -145,10 +145,13 @@ void UHSAGameLoop::OnLevelGenerated()
 		auto LevelMap = LevelGen->GetCurrentLevelMap();
 		gameInstance->PopulateLevel(LevelMap);
 
+		auto LevelMapNEW = LevelGen->GetCurrentLevelMapNEW();
+		
+		
 		//register the amount of enemies in this level
-		for (int i = 0; i < LevelMap.Num(); i++)
+		for (int i = 0; i < LevelMapNEW.Num(); i++)
 		{
-			if (IsEnemy(static_cast<EEntityType>(LevelMap[i])))
+			if (IsEnemy(static_cast<EEntityType>(LevelMapNEW[i].EntityId)))
 			{
 				GameLevelData.EnemiesAlive++;
 			}
