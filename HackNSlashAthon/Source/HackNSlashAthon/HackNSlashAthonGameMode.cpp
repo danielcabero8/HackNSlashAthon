@@ -24,3 +24,26 @@ AHackNSlashAthonGameMode::AHackNSlashAthonGameMode()
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
 }
+
+TSubclassOf<AActor> AHackNSlashAthonGameMode::GetActorToSpawn(EHSAEntityType EntityType) const
+{
+	auto ActorSpawnDataAsset = GetActorSpawnDataAsset();
+	if (ActorSpawnDataAsset == nullptr)
+	{
+		return nullptr;
+	}
+
+	auto result = ActorSpawnDataAsset->SpawnConfig.FindByPredicate(
+		[EntityType](const FHSASpawnConfigurationDataAssetItem& Item) 
+		{
+			return Item.TypeID == EntityType;
+		}
+	); 
+
+	if (result != nullptr)
+	{
+		return result->SpawneableActor;
+	}
+
+	return nullptr;
+}
