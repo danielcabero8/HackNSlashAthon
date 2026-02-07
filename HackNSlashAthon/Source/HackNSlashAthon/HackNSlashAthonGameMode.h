@@ -22,11 +22,14 @@ public:
 
 
 	const FHSASpawnConfigurationDataAssetItem* GetSpawnConfiguration(EHSAEntityType EntityType) const;
+	bool UseRemoteAPIGeneration() const { return bUseRemoteAPIGeneration; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UHSAActorSpawnDataAsset> ActorSpawnDataAssetClass = nullptr;
 
+	UPROPERTY(EditDefaultsOnly)
+	bool bUseRemoteAPIGeneration = false;
 };
 
 inline const UHSAActorSpawnDataAsset*  AHackNSlashAthonGameMode::GetActorSpawnDataAsset() const

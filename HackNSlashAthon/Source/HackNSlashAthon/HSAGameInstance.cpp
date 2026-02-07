@@ -13,9 +13,23 @@ void UHSAGameInstance::RegisterTiles( TArray<AStaticMeshActor*> InTileNames, int
 	Tiles = InTileNames;
 	Rows = InRows;
 	Columns = InColumns;
+
+	auto GetTrailingNumber = [](const FString& Label) -> int32
+	{
+		const int32 LastNonDigit = Label.FindLastCharByPredicate([](TCHAR C) { return !FChar::IsDigit(C); });
+		const FString NumberPart = Label.RightChop(LastNonDigit + 1);
+		return FCString::Atoi(*NumberPart);
+	};
+
+	Tiles.Sort([&GetTrailingNumber](const AStaticMeshActor& A, const AStaticMeshActor& B) -> bool
+	{
+		const int32 NumA = GetTrailingNumber(A.GetActorLabel());
+		const int32 NumB = GetTrailingNumber(B.GetActorLabel());
+		return NumA < NumB;
+	});
 }
 
-void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
+void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 {
 	UWorld* CurrentWorld = GetWorld();
 	if (CurrentWorld == nullptr) 
@@ -41,7 +55,7 @@ void UHSAGameInstance::PopulateLevel(const TArray<int32>& LevelMap)
 		staticMeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		staticMeshComp->SetVisibility(true);
 
-		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i]);
+		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i].EntityId);
 		
 		auto SpawnConfigItem = CurrentGameMode->GetSpawnConfiguration(EntityType);
 		if (SpawnConfigItem == nullptr) {

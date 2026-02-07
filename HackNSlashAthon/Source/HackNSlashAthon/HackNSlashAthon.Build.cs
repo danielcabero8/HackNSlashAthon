@@ -21,6 +21,9 @@ public class HackNSlashAthon : ModuleRules
 			,"EnhancedInput" 
 			,"UMG"
 			,"CommonUI"
+			,"HTTP"
+			,"Json"
+			,"JsonUtilities"
         });
     }
 }
