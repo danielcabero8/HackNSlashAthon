@@ -42,8 +42,11 @@ void UHSAGameLoop::SetState(EHSAGameState state)
 	case EHSAGameState::LoadingLevel:
 		OnLoadingLevel();
 		break;
-	case EHSAGameState::TransitioningToLevel:
-		OnTransitioningToLevel();
+	case EHSAGameState::LoadingComplete:
+		OnLoadingComplete();
+		break;
+	case EHSAGameState::TransitioningIn:
+		OnTransitioningIn();
 		break;
 	case EHSAGameState::PlayingLevel:
 		OnPlayingLevel();
@@ -53,6 +56,9 @@ void UHSAGameLoop::SetState(EHSAGameState state)
 		break;
 	case EHSAGameState::GameOver:
 		OnGameOver();
+		break;
+	case EHSAGameState::LevelCompleted:
+		OnLevelCompleted();
 		break;
 	}
 
@@ -80,7 +86,11 @@ void UHSAGameLoop::OnLoadingLevel()
 	}
 }
 
-void UHSAGameLoop::OnTransitioningToLevel()
+void UHSAGameLoop::OnLoadingComplete()
+{
+}
+
+void UHSAGameLoop::OnTransitioningIn()
 {
 }
 
@@ -90,18 +100,16 @@ void UHSAGameLoop::OnPlayingLevel()
 
 void UHSAGameLoop::OnTransitioningOut()
 {
-	UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance());
-	if ( !ensure(gameInstance))
-	{
-		return;
-	}
-
-	gameInstance->CleanLevel();
-
 	//IMPORTANT: Transition to LoadingLevel happens in Map's LevelBP
 }
 
 void UHSAGameLoop::OnGameOver()
+{
+	//for now just loop
+	SetState(EHSAGameState::TransitioningOut);
+}
+
+void UHSAGameLoop::OnLevelCompleted()
 {
 	//for now just loop
 	SetState(EHSAGameState::TransitioningOut);
@@ -146,6 +154,8 @@ void UHSAGameLoop::OnLevelGenerated()
 			}
 		}
 	}
+
+	SetState(EHSAGameState::LoadingComplete);
 }
 
 UHSALevelGeneration* UHSAGameLoop::GetLevelGenerationSubsystem() const

@@ -29,10 +29,12 @@ UENUM(BlueprintType)
 enum class EHSAGameState : uint8
 {
 	LoadingLevel,
-	TransitioningToLevel,
+	LoadingComplete,
 	PlayingLevel,
+
+	TransitioningIn,
 	TransitioningOut,
-	
+
 	LevelCompleted,
 	GameOver
 };
@@ -93,18 +95,18 @@ public:
 	static bool IsEnvironment(const EHSAEntityType EntityType);
 	static bool IsTrap(const EHSAEntityType EntityType);
 	
-private:
+protected:
+	UPROPERTY(BlueprintReadOnly)
 	EHSAGameState CurrentState;
 
 	void OnLoadingLevel();
-	void OnTransitioningToLevel();
+	void OnLoadingComplete();
+	void OnTransitioningIn();
 	void OnPlayingLevel();
 	void OnTransitioningOut();
 	void OnGameOver();
-
-	void FadeToBlack();
-	void FadeOutToGame();
-
+	void OnLevelCompleted();
+	
 	void DataUpdated();
 
 	UFUNCTION()
