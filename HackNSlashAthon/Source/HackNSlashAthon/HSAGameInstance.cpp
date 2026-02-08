@@ -71,7 +71,7 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 			auto player = GetFirstLocalPlayerController();
 			if ( AHackNSlashAthonCharacter* pawn = Cast<AHackNSlashAthonCharacter>(player->GetPawn()))
 			{
-				SpawnLocation.Z += 1500;
+				SpawnLocation.Z += 100;
 				pawn->SetActorLocation(SpawnLocation );
 			};
 			continue;
@@ -129,8 +129,12 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 		{
 			CollisionType = ECollisionEnabled::NoCollision;
 			GroundVisibility = false;
+			auto actor = CurrentWorld->SpawnActor<AActor>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params);
+			SpawnedActors.Add(actor);
+			if (actor == nullptr) {
+				UE_LOG(LogTemp, Warning, TEXT("PopulateLevel: Hole not created (index %d)."), i);
 
-			SpawnedActors.Add(CurrentWorld->SpawnActor<AActor>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params));
+			}
 		}
 		else
 		{
@@ -178,6 +182,9 @@ void UHSAGameInstance::CleanLevel()
 {
 	for (auto Actor : SpawnedActors)
 	{
+		if (Actor == nullptr)
+			continue;
+
 		Actor->Destroy();
 	}
 	SpawnedActors.Empty();
