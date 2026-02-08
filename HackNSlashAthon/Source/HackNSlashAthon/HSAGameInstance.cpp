@@ -46,14 +46,14 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 	for (int i = 0; i < LevelMap.Num(); i++)
 	{
-		UStaticMeshComponent* staticMeshComp = Tiles[i]->GetStaticMeshComponent();
+		auto Tile = Tiles[i];
+		UStaticMeshComponent* staticMeshComp = Tile->GetStaticMeshComponent();
 		if ( !staticMeshComp )
 		{
 			continue;
 		}
-
-		staticMeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		staticMeshComp->SetVisibility(true);
+		ECollisionEnabled::Type CollisionType = ECollisionEnabled::QueryAndPhysics;
+		bool GroundVisibility = true;
 
 		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i].EntityId);
 		
@@ -62,8 +62,11 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 			continue;
 		}
 
-		FVector SpawnLocation = Tiles[i]->GetActorLocation();
-		SpawnLocation.Z += SpawnConfigItem->ActorOffsetZ + 100;
+		FVector SpawnLocation = Tile->GetActorLocation();
+		// Tile start location is bottom left of the box. Z should be box height
+		SpawnLocation.Z += Tile->GetSimpleCollisionHalfHeight() * 2;
+		SpawnLocation.Z += SpawnConfigItem->ActorOffsetZ;
+
 
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -75,8 +78,6 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 			AAIController* SpawnedController = CurrentWorld->SpawnActor<AAIController>(AICharacter_DTO->AIControllerClass, SpawnLocation, FRotator::ZeroRotator, Params);
 			if (SpawnedController) {
-				//SpawnLocation = Tiles[i]->GetActorLocation();
-				//SpawnLocation.Z += Tiles[i]->GetSimpleCollisionHalfHeight() * 2;
 				AHSAAICharacter* SpawnedActor = CurrentWorld->SpawnActor<AHSAAICharacter>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params);
 				if (SpawnedActor == nullptr) {
 					GetWorld()->DestroyActor(SpawnedController);
@@ -92,8 +93,8 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 		if (EntityType == EHSAEntityType::Hole)
 		{
-			ECollisionEnabled::Type Collision = ECollisionEnabled::NoCollision;
-			staticMeshComp->SetVisibility(false);
+			CollisionType = ECollisionEnabled::NoCollision;
+			GroundVisibility = false;
 
 			SpawnedActors.Add(CurrentWorld->SpawnActor<AActor>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params));
 		}
@@ -102,6 +103,10 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 		{
 			SpawnedActors.Add(CurrentWorld->SpawnActor<AActor>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params));
 		}
+
+		staticMeshComp->SetVisibility(GroundVisibility);
+		staticMeshComp->SetCollisionEnabled(CollisionType);
+		
 	}
 }
 
