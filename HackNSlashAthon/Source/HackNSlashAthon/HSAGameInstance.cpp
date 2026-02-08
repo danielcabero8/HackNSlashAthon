@@ -71,7 +71,7 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 			auto player = GetFirstLocalPlayerController();
 			if ( AHackNSlashAthonCharacter* pawn = Cast<AHackNSlashAthonCharacter>(player->GetPawn()))
 			{
-				SpawnLocation.Z += 1500;
+				SpawnLocation.Z += 150;
 				pawn->SetActorLocation(SpawnLocation );
 			};
 			continue;
