@@ -13,6 +13,8 @@
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
 
+#include "HSAGameLoop.h"
+
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AHackNSlashAthonPlayerController::AHackNSlashAthonPlayerController()
@@ -69,6 +71,12 @@ void AHackNSlashAthonPlayerController::SetupInputComponent()
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AHackNSlashAthonPlayerController::OnJumpStarted);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AHackNSlashAthonPlayerController::OnJumpStopped);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &AHackNSlashAthonPlayerController::OnJumpStopped);
+		}
+
+		// New: Reset level / force complete
+		if (ResetLevelAction)
+		{
+			EnhancedInputComponent->BindAction(ResetLevelAction, ETriggerEvent::Started, this, &AHackNSlashAthonPlayerController::OnResetLevel);
 		}
 	}
 	else
@@ -179,5 +187,20 @@ void AHackNSlashAthonPlayerController::OnJumpStopped()
 	if (ACharacter* Char = Cast<ACharacter>(GetPawn()))
 	{
 		Char->StopJumping();
+	}
+}
+
+
+void AHackNSlashAthonPlayerController::OnResetLevel()
+{
+	// Acquire the game loop subsystem and transition state to LevelCompleted
+	if (UHSAGameLoop* GameLoop = GetGameInstance() ? GetGameInstance()->GetSubsystem<UHSAGameLoop>() : nullptr)
+	{
+		GameLoop->SetState(EHSAGameState::LevelCompleted);
+		UE_LOG(LogTemplateCharacter, Display, TEXT("OnResetLevel: Requested LevelCompleted state."));
+	}
+	else
+	{
+		UE_LOG(LogTemplateCharacter, Warning, TEXT("OnResetLevel: Could not find UHSAGameLoop subsystem to set level complete."));
 	}
 }

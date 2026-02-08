@@ -53,6 +53,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
 
+	// New: Reset level / force level complete action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ResetLevelAction;
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -72,6 +76,9 @@ protected:
 	void OnMove(const FInputActionValue& Value);
 	void OnJumpStarted();
 	void OnJumpStopped();
+
+	// Handler for the new reset/level-complete action
+	void OnResetLevel();
 
 private:
 	FVector CachedDestination;

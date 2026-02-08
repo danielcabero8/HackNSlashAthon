@@ -1,7 +1,6 @@
 ﻿#include "HSAGameInstance.h"
 
 #include "CoreMinimal.h"
-#include "AIController.h"
 #include "HackNSlashAthonCharacter.h"
 
 #include "HackNSlashAthonGameMode.h"
@@ -90,20 +89,37 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 		if (UHSAGameLoop::IsEnemy(EntityType))
 		{
+			// Spawn the pawn immediately, but delay spawning/possessing the controller.
 			AHSAAICharacter* AICharacter_DTO = SpawnConfigItem->SpawneableActor->GetDefaultObject<AHSAAICharacter>();
+			TSubclassOf<AAIController> ControllerClass = nullptr;
+			if (AICharacter_DTO)
+			{
+				ControllerClass = AICharacter_DTO->AIControllerClass;
+			}
 
+			AHSAAICharacter* SpawnedActor = CurrentWorld->SpawnActor<AHSAAICharacter>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params);
+			if (SpawnedActor == nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("PopulateLevel: Failed to spawn enemy pawn at index %d."), i);
+				continue;
+			}
 
-			AAIController* SpawnedController = CurrentWorld->SpawnActor<AAIController>(AICharacter_DTO->AIControllerClass, SpawnLocation, FRotator::ZeroRotator, Params);
-			if (SpawnedController) {
-				AHSAAICharacter* SpawnedActor = CurrentWorld->SpawnActor<AHSAAICharacter>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params);
-				if (SpawnedActor == nullptr) {
-					GetWorld()->DestroyActor(SpawnedController);
-					continue;				
-				}
-				FVector CurrActorLocation = SpawnedActor->GetActorLocation();
-				SpawnedController->Possess(SpawnedActor);
+			// Add pawn to spawned list now (we have a pawn). Possession will occur after a delay.
+			SpawnedActors.Add(SpawnedActor);
 
-				SpawnedActors.Add(SpawnedActor);
+			// If controller class is valid, schedule spawn + possess after AIStartDelay
+			if (ControllerClass)
+			{
+				FTimerDelegate TimerDel;
+				TimerDel.BindUFunction(this, FName("SpawnAndPossessController"), SpawnedActor, ControllerClass);
+
+				FTimerHandle Handle;
+				// Schedule with the configured AIStartDelay (can be set in editor/class defaults)
+				CurrentWorld->GetTimerManager().SetTimer(Handle, TimerDel, AIStartDelay, false);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("PopulateLevel: Enemy pawn class has no AIControllerClass specified (index %d)."), i);
 			}
 			
 		}
@@ -124,6 +140,60 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 		staticMeshComp->SetCollisionEnabled(CollisionType);
 		boxCollision->SetCollisionEnabled(CollisionType);
 	}
+}
+
+void UHSAGameInstance::SpawnAndPossessController(AHSAAICharacter* Pawn, TSubclassOf<AAIController> ControllerClass)
+{
+	if (!Pawn || Pawn->IsPendingKillPending())
+	{
+		return;
+	}
+
+	UWorld* World = Pawn->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AAIController* SpawnedController = World->SpawnActor<AAIController>(ControllerClass, Pawn->GetActorLocation(), Pawn->GetActorRotation(), Params);
+	if (!SpawnedController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SpawnAndPossessController: Failed to spawn controller for pawn %s."), *GetNameSafe(Pawn));
+		Pawn->Destroy(); // Clean up the pawn if we can't control it
+		return;
+	}
+
+	SpawnedController->Possess(Pawn);
+}
+
+void UHSAGameInstance::SpawnAndPossessController(AHSAAICharacter* Pawn, TSubclassOf<AAIController> ControllerClass)
+{
+	if (!Pawn || Pawn->IsPendingKillPending())
+	{
+		return;
+	}
+
+	UWorld* World = Pawn->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AAIController* SpawnedController = World->SpawnActor<AAIController>(ControllerClass, Pawn->GetActorLocation(), Pawn->GetActorRotation(), Params);
+	if (!SpawnedController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SpawnAndPossessController: Failed to spawn controller for pawn %s."), *GetNameSafe(Pawn));
+		Pawn->Destroy(); // Clean up the pawn if we can't control it
+		return;
+	}
+
+	SpawnedController->Possess(Pawn);
 }
 
 void UHSAGameInstance::CleanLevel()
