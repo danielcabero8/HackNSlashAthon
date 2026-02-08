@@ -89,6 +89,8 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 		if (UHSAGameLoop::IsEnemy(EntityType))
 		{
+			SpawnLocation.X += 50.0;
+			SpawnLocation.Y += 50.0;
 			// Spawn the pawn immediately, but delay spawning/possessing the controller.
 			AHSAAICharacter* AICharacter_DTO = SpawnConfigItem->SpawneableActor->GetDefaultObject<AHSAAICharacter>();
 			TSubclassOf<AAIController> ControllerClass = nullptr;
