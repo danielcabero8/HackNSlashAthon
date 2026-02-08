@@ -8,6 +8,22 @@ public class HackNSlashAthon : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput" });
+        PublicDependencyModuleNames.AddRange(new string[] 
+		{ 
+			"Core"
+			,"CoreUObject"
+			,"Engine"
+			,"InputCore"
+			,"NavigationSystem"
+			,"GameplayTasks"
+            ,"AIModule"
+			,"Niagara"
+			,"EnhancedInput" 
+			,"UMG"
+			,"CommonUI"
+			,"HTTP"
+			,"Json"
+			,"JsonUtilities"
+        });
     }
 }

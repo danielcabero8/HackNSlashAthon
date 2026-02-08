@@ -11,6 +11,9 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+#include "GameFramework/Character.h"
+
+#include "HSAGameLoop.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -20,6 +23,7 @@ AHackNSlashAthonPlayerController::AHackNSlashAthonPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+	bIsTouch = false;
 }
 
 void AHackNSlashAthonPlayerController::BeginPlay()
@@ -53,6 +57,27 @@ void AHackNSlashAthonPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AHackNSlashAthonPlayerController::OnTouchTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AHackNSlashAthonPlayerController::OnTouchReleased);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AHackNSlashAthonPlayerController::OnTouchReleased);
+	
+	
+		// New: Bind Move (Axis2D) to AddMovementInput
+		if (MoveAction)
+		{
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHackNSlashAthonPlayerController::OnMove);
+		}
+
+		// New: Bind Jump action (Space) - start/stop
+		if (JumpAction)
+		{
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AHackNSlashAthonPlayerController::OnJumpStarted);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AHackNSlashAthonPlayerController::OnJumpStopped);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &AHackNSlashAthonPlayerController::OnJumpStopped);
+		}
+
+		// New: Reset level / force complete
+		if (ResetLevelAction)
+		{
+			EnhancedInputComponent->BindAction(ResetLevelAction, ETriggerEvent::Started, this, &AHackNSlashAthonPlayerController::OnResetLevel);
+		}
 	}
 	else
 	{
@@ -122,4 +147,60 @@ void AHackNSlashAthonPlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+
+void AHackNSlashAthonPlayerController::OnMove(const FInputActionValue& Value)
+{
+	// Expecting an Axis2D value (X = Right, Y = Forward)
+	const FVector MovementVector = Value.Get<FVector>();
+	UE_LOG(LogTemplateCharacter, Display, TEXT("OnMove called: X=%f Y=%f"), MovementVector.X, MovementVector.Y);
+
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn || MovementVector.IsNearlyZero())
+	{
+		return;
+	}
+
+	// Convert input to world direction based on controller rotation (keeps movement relative to camera/control orientation)
+	const FRotator ControlRot = GetControlRotation();
+	const FRotator YawRot(0.f, ControlRot.Yaw, 0.f);
+
+	const FVector Forward = FRotationMatrix(YawRot).GetUnitAxis(EAxis::X); // forward
+	const FVector Right = FRotationMatrix(YawRot).GetUnitAxis(EAxis::Y);   // right
+
+	// MovementVector.X -> Right (+1 = D), MovementVector.Y -> Forward (+1 = W)
+	ControlledPawn->AddMovementInput(Forward, MovementVector.Y);
+	ControlledPawn->AddMovementInput(Right, MovementVector.X);
+}
+
+void AHackNSlashAthonPlayerController::OnJumpStarted()
+{
+	if (ACharacter* Char = Cast<ACharacter>(GetPawn()))
+	{
+		Char->Jump();
+	}
+}
+
+void AHackNSlashAthonPlayerController::OnJumpStopped()
+{
+	if (ACharacter* Char = Cast<ACharacter>(GetPawn()))
+	{
+		Char->StopJumping();
+	}
+}
+
+
+void AHackNSlashAthonPlayerController::OnResetLevel()
+{
+	// Acquire the game loop subsystem and transition state to LevelCompleted
+	if (UHSAGameLoop* GameLoop = GetGameInstance() ? GetGameInstance()->GetSubsystem<UHSAGameLoop>() : nullptr)
+	{
+		GameLoop->SetState(EHSAGameState::LevelCompleted);
+		UE_LOG(LogTemplateCharacter, Display, TEXT("OnResetLevel: Requested LevelCompleted state."));
+	}
+	else
+	{
+		UE_LOG(LogTemplateCharacter, Warning, TEXT("OnResetLevel: Could not find UHSAGameLoop subsystem to set level complete."));
+	}
 }

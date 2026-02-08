@@ -24,3 +24,21 @@ AHackNSlashAthonGameMode::AHackNSlashAthonGameMode()
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
 }
+
+const FHSASpawnConfigurationDataAssetItem* AHackNSlashAthonGameMode::GetSpawnConfiguration(EHSAEntityType EntityType) const
+{
+	auto ActorSpawnDataAsset = GetActorSpawnDataAsset();
+	if (ActorSpawnDataAsset == nullptr)
+	{
+		return nullptr;
+	}
+
+	auto result = ActorSpawnDataAsset->SpawnConfig.FindByPredicate(
+		[EntityType](const FHSASpawnConfigurationDataAssetItem& Item) 
+		{
+			return Item.TypeID == EntityType;
+		}
+	); 
+
+	return result;
+}
