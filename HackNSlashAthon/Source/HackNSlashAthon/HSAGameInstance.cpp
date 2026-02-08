@@ -50,7 +50,7 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 		auto Tile = Tiles[i];
 		UStaticMeshComponent* staticMeshComp = Tile->GetStaticMeshComponent();
 		UBoxComponent* boxCollision = Tile->GetComponentByClass<UBoxComponent>();
-		if ( !staticMeshComp || !boxCollision)
+		if ( !staticMeshComp)
 		{
 			continue;
 		}
@@ -61,7 +61,7 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 		FVector SpawnLocation = Tile->GetActorLocation();
 		// Tile start location is bottom left of the box. Z should be box height
-		SpawnLocation.Z += Tile->GetSimpleCollisionHalfHeight() * 2;
+		SpawnLocation.Z += Tile->GetSimpleCollisionHalfHeight();
 		SpawnLocation.X -= 50.0;
 		SpawnLocation.Y -= 50.0;
 		
@@ -138,7 +138,10 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 		staticMeshComp->SetVisibility(GroundVisibility);
 		staticMeshComp->SetCollisionEnabled(CollisionType);
-		boxCollision->SetCollisionEnabled(CollisionType);
+		if ( boxCollision )
+		{
+			boxCollision->SetCollisionEnabled(CollisionType);
+		}
 	}
 }
 
