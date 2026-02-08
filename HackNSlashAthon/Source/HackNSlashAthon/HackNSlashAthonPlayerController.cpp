@@ -78,6 +78,11 @@ void AHackNSlashAthonPlayerController::SetupInputComponent()
 		{
 			EnhancedInputComponent->BindAction(ResetLevelAction, ETriggerEvent::Started, this, &AHackNSlashAthonPlayerController::OnResetLevel);
 		}
+
+		if ( DashAction )
+		{
+			EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &AHackNSlashAthonPlayerController::OnDashRequested);
+		}
 	}
 	else
 	{
