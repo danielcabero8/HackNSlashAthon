@@ -84,6 +84,8 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 				}
 				FVector CurrActorLocation = SpawnedActor->GetActorLocation();
 				SpawnedController->Possess(SpawnedActor);
+
+				SpawnedActors.Add(SpawnedActor);
 			}
 			
 		}

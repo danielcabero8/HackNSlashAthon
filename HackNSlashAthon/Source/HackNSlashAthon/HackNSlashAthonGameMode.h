@@ -24,6 +24,9 @@ public:
 	const FHSASpawnConfigurationDataAssetItem* GetSpawnConfiguration(EHSAEntityType EntityType) const;
 	bool UseRemoteAPIGeneration() const { return bUseRemoteAPIGeneration; }
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bStartDemoOnInit = false;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UHSAActorSpawnDataAsset> ActorSpawnDataAssetClass = nullptr;

@@ -1,5 +1,6 @@
 #include "HSAGameLoop.h"
 
+#include "HSADemo.h"
 #include "HSAGameInstance.h"
 #include "HSALevelGeneration.h"
 #include "Engine/GameInstance.h"
@@ -16,10 +17,36 @@ void UHSAGameLoop::Initialize(FSubsystemCollectionBase& Collection)
 	}
 }
 
+void UHSAGameLoop::PrepareLevel(const TArray<FHSAMapTileContent>& LevelMap)
+{
+	// Reset the level data
+	GameLevelData = FHSAGameLevelData();
+	
+	// Update the game instance with the new level map
+	if ( UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance()))
+	{
+		//spawn entities and floor
+		gameInstance->PopulateLevel(LevelMap);
+
+		//register the amount of enemies in this level
+		for (int i = 0; i < LevelMap.Num(); i++)
+		{
+			if (IsEnemy(static_cast<EHSAEntityType>(LevelMap[i].EntityId)))
+			{
+				GameLevelData.EnemiesAlive++;
+			}
+		}
+	}
+
+	SetState(EHSAGameState::LoadingComplete);
+}
+
 void UHSAGameLoop::Tick(float DeltaTime)
 {
-	// Your logic here!
-	// Example: Update your MapGridRow logic or timers
+	if (Demo)
+	{
+		Demo->Update(DeltaTime);
+	}
 }
 
 bool UHSAGameLoop::IsTickable() const
@@ -65,6 +92,12 @@ void UHSAGameLoop::SetState(EHSAGameState state)
 	OnGameStateChanged.Broadcast(CurrentState);
 }
 
+void UHSAGameLoop::StartDemo(int32 LevelsCount, float LevelTime, float TransitionTime)
+{
+	Demo = NewObject<UHSADemo>(this);
+	Demo->Init(LevelsCount, LevelTime, TransitionTime);
+}
+
 void UHSAGameLoop::HitPlayer()
 {
 	GameLevelData.CurrentLives--;
@@ -85,7 +118,21 @@ void UHSAGameLoop::OnLoadingLevel()
 {
 	if (UHSALevelGeneration* LevelGen = GetLevelGenerationSubsystem())
 	{
-		LevelGen->GenerateLevel();
+		UHSAGameInstance* GameInstance = Cast<UHSAGameInstance>(GetGameInstance());
+		if (!ensure(GameInstance))
+		{
+			return;
+		}
+
+		FHSALevelGenerationData LevelGenData;
+		LevelGenData.Rows = GameInstance->Rows;
+		LevelGenData.Columns = GameInstance->Columns;
+		LevelGenData.CompletedLevel = CurrentDungeonLevel;
+		LevelGenData.TimeTaken = GameLevelData.TimeElapsed;
+		LevelGenData.HitsTaken = GameLevelData.HitsTaken;
+		LevelGenData.EnemiesKilled = GameLevelData.EnemiesKilled;
+
+		LevelGen->GenerateLevel(LevelGenData);
 	}
 }
 
@@ -132,33 +179,16 @@ void UHSAGameLoop::DataUpdated()
 
 void UHSAGameLoop::OnLevelGenerated()
 {
+	if (Demo != nullptr)
+	{
+		return;
+	}
+
 	UHSALevelGeneration* LevelGen = GetLevelGenerationSubsystem();
 	if ( !ensure(LevelGen))
 	{
-		return ;
+		PrepareLevel(LevelGen->GetCurrentLevelMap());
 	}
-
-	// Reset the level data
-	GameLevelData = FHSAGameLevelData();
-
-	// Update the game instance with the new level map
-	if ( UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance()))
-	{
-		//spawn entities and floor
-		auto LevelMap = LevelGen->GetCurrentLevelMap();
-		gameInstance->PopulateLevel(LevelMap);
-
-		//register the amount of enemies in this level
-		for (int i = 0; i < LevelMap.Num(); i++)
-		{
-			if (IsEnemy(static_cast<EHSAEntityType>(LevelMap[i].EntityId)))
-			{
-				GameLevelData.EnemiesAlive++;
-			}
-		}
-	}
-
-	SetState(EHSAGameState::LoadingComplete);
 }
 
 UHSALevelGeneration* UHSAGameLoop::GetLevelGenerationSubsystem() const

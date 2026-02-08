@@ -2,15 +2,10 @@
 
 #include "HackNSlashAthonGameMode.h"
 #include "HSAGameLoop.h"
-#include "HSAGameInstance.h"
-#include "HSAGameLoop.h"
 #include "HttpModule.h"
-#include "GameFramework/GameStateBase.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonSerializer.h"
-
-class UHSAGameLoop;
 
 void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -85,15 +80,14 @@ void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 	);
 }
 
-void UHSALevelGeneration::GenerateLevel()
+void UHSALevelGeneration::GenerateLevel(const FHSALevelGenerationData& Data)
 {
-	UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetWorld()->GetGameInstance());
-	UHSAGameLoop* gameLoop = gameInstance ? gameInstance->GetSubsystem<UHSAGameLoop>() : nullptr;
-	UWorld* World = GetWorld();
-	AGameStateBase* GameState = World ? World->GetGameState() : nullptr;
-	AHackNSlashAthonGameMode* CurrentGameMode = World->GetAuthGameMode<AHackNSlashAthonGameMode>();
+	PendingLevelGenData = Data;
 
-	if ( !ensure(gameInstance) || !ensure(CurrentGameMode) || !ensure(gameLoop))
+	UWorld* World = GetWorld();
+	AHackNSlashAthonGameMode* CurrentGameMode = World ? World->GetAuthGameMode<AHackNSlashAthonGameMode>() : nullptr;
+
+	if (!ensure(CurrentGameMode))
 	{
 		return;
 	}
@@ -101,17 +95,17 @@ void UHSALevelGeneration::GenerateLevel()
 	//debug version
 	if (!CurrentGameMode->UseRemoteAPIGeneration())
 	{
-		const int32 mapSize = gameInstance->Columns * gameInstance->Rows;
+		const int32 mapSize = Data.Columns * Data.Rows;
 		MapTileContents = TArray<FHSAMapTileContent>();
 		MapTileContents.Reserve(mapSize);
-	
+
 		for ( int i = 0; i < mapSize; i++ )
 		{
 			const int value = FMath::RandRange(0, 10);
 			const int32 entityId = value < 2 ? 1 : 2;
-			
+
 			FHSAMapTileContent entry;
-			entry.EntityId = value;
+			entry.EntityId = entityId;
 			MapTileContents.Add(entry);
 		}
 
@@ -127,16 +121,13 @@ void UHSALevelGeneration::GenerateLevel()
 	//online version
 	else
 	{
-		const int32 CompletedLevel = gameLoop->CurrentDungeonLevel;
-		const FHSAGameLevelData& CompletedLevelData = gameLoop->GameLevelData;
-
-		// Build user prompt JSON
+		// Build user prompt JSON from the provided data
 		TSharedPtr<FJsonObject> PromptJson = MakeShareable(new FJsonObject());
-		PromptJson->SetNumberField(TEXT("CompletedLevel"), CompletedLevel);
-		PromptJson->SetNumberField(TEXT("Time"), CompletedLevelData.TimeElapsed);
-		PromptJson->SetNumberField(TEXT("HitsTaken"), CompletedLevelData.HitsTaken);
-		PromptJson->SetNumberField(TEXT("Rows"), gameInstance->Rows);
-		PromptJson->SetNumberField(TEXT("Columns"), gameInstance->Columns);
+		PromptJson->SetNumberField(TEXT("CompletedLevel"), Data.CompletedLevel);
+		PromptJson->SetNumberField(TEXT("Time"), Data.TimeTaken);
+		PromptJson->SetNumberField(TEXT("HitsTaken"), Data.HitsTaken);
+		PromptJson->SetNumberField(TEXT("Rows"), Data.Rows);
+		PromptJson->SetNumberField(TEXT("Columns"), Data.Columns);
 
 		FString PromptString;
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PromptString);
@@ -277,13 +268,8 @@ void UHSALevelGeneration::OnClaudeHttpResponseReceived(FHttpRequestPtr Request, 
 		return;
 	}
 
-	// Get grid dimensions from game instance
-	UHSAGameInstance* GameInstance = Cast<UHSAGameInstance>(GetGameInstance());
-	if (!ensure(GameInstance))
-	{
-		return;
-	}
-	const int32 TotalTiles = GameInstance->Rows * GameInstance->Columns;
+	// Get grid dimensions from the stored level generation data
+	const int32 TotalTiles = PendingLevelGenData.Rows * PendingLevelGenData.Columns;
 
 	// Initialize all tiles as Floor (EntityId 2)
 	MapTileContents.Empty();

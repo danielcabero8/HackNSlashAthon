@@ -20,6 +20,19 @@ struct FHSAMapTileContent
 	float BulletSpeed = 0.f;
 };
 
+
+USTRUCT(BlueprintType)
+struct FHSALevelGenerationData
+{
+	GENERATED_BODY()
+
+	int Rows, Columns;
+	int HitsTaken;
+	float TimeTaken;
+	int CompletedLevel;
+	int EnemiesKilled;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelGenerated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClaudeResponseReceived, const FString&, Response);
 
@@ -35,7 +48,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	const TArray<FHSAMapTileContent>& GetCurrentLevelMap() const { return MapTileContents; }
-	void GenerateLevel();
+	void GenerateLevel(const FHSALevelGenerationData& Data);
 
 	/**
 	 * Send a prompt to the Claude API asynchronously.
@@ -58,6 +71,9 @@ public:
 	FString SystemPrompt;
 
 protected:
+	/** Stored level generation data from the last GenerateLevel call (used by async response handler). */
+	FHSALevelGenerationData PendingLevelGenData;
+
 	/** Parsed map tile contents from the last Claude response. */
 	UPROPERTY(BlueprintReadOnly, Category = "LevelGeneration|Claude")
 	TArray<FHSAMapTileContent> MapTileContents;

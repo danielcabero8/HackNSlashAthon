@@ -60,6 +60,8 @@ struct FHSAGameLevelData
 	float TimeElapsed = 0.f;
 };
 
+class UHSADemo;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStateChanged, EHSAGameState, NewState);
 
 UCLASS()
@@ -89,13 +91,16 @@ public:
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
+	void PrepareLevel(const TArray<FHSAMapTileContent>& LevelMap);
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnGameStateChanged OnGameStateChanged;
 
 	UFUNCTION(BlueprintCallable)
 	void SetState( EHSAGameState state);
 
-
+	UFUNCTION(BlueprintCallable)
+	void StartDemo(int32 LevelsCount, float LevelTime, float TransitionTime);
 
 	//Api
 	UFUNCTION(BlueprintCallable)
@@ -125,6 +130,9 @@ protected:
 	UFUNCTION()
 	void OnLevelGenerated();
 	
+	UPROPERTY()
+	TObjectPtr<UHSADemo> Demo;
+
 	//helpers
 	UHSALevelGeneration* GetLevelGenerationSubsystem() const;
 };
