@@ -1,6 +1,7 @@
 # HackNSlashAthon
 
 🎮 HackNSlashAthon — AI-Powered Procedural Dungeon Crawler
+
 Supercell Hackathon Feb 2026 - Hack N Slack game using GenAI made by @salvagm &amp; @danielcabero8
 
   🎯 Project Goal
