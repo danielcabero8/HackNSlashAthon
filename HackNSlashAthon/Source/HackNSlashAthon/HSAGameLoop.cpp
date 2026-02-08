@@ -159,6 +159,10 @@ void UHSAGameLoop::OnPlayingLevel()
 
 void UHSAGameLoop::OnTransitioningOut()
 {
+	if ( UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance()))
+	{
+		gameInstance->CleanLevel();
+	}
 	//IMPORTANT: Transition to LoadingLevel happens in Map's LevelBP
 }
 

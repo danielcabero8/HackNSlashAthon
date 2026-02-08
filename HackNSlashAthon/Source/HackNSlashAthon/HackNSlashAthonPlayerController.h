@@ -57,6 +57,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ResetLevelAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* DashAction;
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -80,6 +83,9 @@ protected:
 	// Handler for the new reset/level-complete action
 	void OnResetLevel();
 
+	UFUNCTION(BlueprintimplementableEvent)
+	void OnDashRequested();
+	
 private:
 	FVector CachedDestination;
 
