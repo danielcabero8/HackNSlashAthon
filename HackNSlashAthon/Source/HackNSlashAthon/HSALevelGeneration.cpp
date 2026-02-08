@@ -114,6 +114,10 @@ void UHSALevelGeneration::GenerateLevel(const FHSALevelGenerationData& Data)
 		MapTileContents[16].EntityId = static_cast<int32>(EHSAEntityType::EnemyType1);
 		MapTileContents[24].EntityId = static_cast<int32>(EHSAEntityType::Spikes);
 		MapTileContents[36].EntityId = static_cast<int32>(EHSAEntityType::Spikes);
+		MapTileContents[39].EntityId = static_cast<int32>(EHSAEntityType::Column);
+		MapTileContents[55].EntityId = static_cast<int32>(EHSAEntityType::Column);
+		MapTileContents[56].EntityId = static_cast<int32>(EHSAEntityType::Rock);
+		MapTileContents[79].EntityId = static_cast<int32>(EHSAEntityType::Rock);
 
 		// Broadcast the raw response text to listeners
 		OnLevelGenerated.Broadcast();

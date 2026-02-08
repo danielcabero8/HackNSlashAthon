@@ -89,17 +89,16 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 			}
 			
 		}
-
-		if (EntityType == EHSAEntityType::Hole)
+		else if (EntityType == EHSAEntityType::Hole)
 		{
 			ECollisionEnabled::Type Collision = ECollisionEnabled::NoCollision;
 			staticMeshComp->SetVisibility(false);
 
 			SpawnedActors.Add(CurrentWorld->SpawnActor<AActor>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params));
 		}
-
-		if (EntityType == EHSAEntityType::Spikes)
+		else
 		{
+			//spawns which don't need any other configuration other than spawning
 			SpawnedActors.Add(CurrentWorld->SpawnActor<AActor>(SpawnConfigItem->SpawneableActor, SpawnLocation, FRotator::ZeroRotator, Params));
 		}
 	}

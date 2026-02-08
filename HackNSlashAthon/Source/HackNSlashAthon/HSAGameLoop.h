@@ -22,6 +22,7 @@ enum class EHSAEntityType : uint8
 	//Environment
 	ENVIRONMENT			= 30 UMETA(Hidden),
 	Column				= 31,
+	Rock				= 32,
 };
 
 
