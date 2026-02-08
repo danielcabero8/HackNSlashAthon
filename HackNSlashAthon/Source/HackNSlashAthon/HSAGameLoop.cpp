@@ -21,6 +21,7 @@ void UHSAGameLoop::PrepareLevel(const TArray<FHSAMapTileContent>& LevelMap)
 {
 	// Reset the level data
 	GameLevelData = FHSAGameLevelData();
+	CurrentDungeonLevel++;
 	
 	// Update the game instance with the new level map
 	if ( UHSAGameInstance* gameInstance = Cast<UHSAGameInstance>(GetGameInstance()))
@@ -155,7 +156,7 @@ void UHSAGameLoop::OnTransitioningOut()
 
 void UHSAGameLoop::OnGameOver()
 {
-	//for now just loop
+	CurrentDungeonLevel = 0;
 	SetState(EHSAGameState::TransitioningOut);
 }
 
@@ -185,7 +186,7 @@ void UHSAGameLoop::OnLevelGenerated()
 	}
 
 	UHSALevelGeneration* LevelGen = GetLevelGenerationSubsystem();
-	if ( !ensure(LevelGen))
+	if ( ensure(LevelGen) )
 	{
 		PrepareLevel(LevelGen->GetCurrentLevelMap());
 	}

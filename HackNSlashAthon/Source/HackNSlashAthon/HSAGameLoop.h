@@ -74,7 +74,7 @@ public:
 	FHSAGameLevelData GameLevelData;
 
 	UPROPERTY(BlueprintReadOnly)
-	int CurrentDungeonLevel = 1;
+	int CurrentDungeonLevel = 0;
 
 	// --- FTickableGameObject Overrides ---
 	// This is your actual Tick function
