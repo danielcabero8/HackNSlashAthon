@@ -1,5 +1,7 @@
 #include "HSAGameLoop.h"
 
+#include "HackNSlashAthonCharacter.h"
+#include "HackNSlashAthonPlayerController.h"
 #include "HSADemo.h"
 #include "HSAGameInstance.h"
 #include "HSALevelGeneration.h"
@@ -102,6 +104,12 @@ void UHSAGameLoop::StartDemo(int32 LevelsCount, float LevelTime, float Transitio
 void UHSAGameLoop::HitPlayer()
 {
 	GameLevelData.CurrentLives--;
+	DataUpdated();
+}
+
+void UHSAGameLoop::KillPlayer()
+{
+	GameLevelData.CurrentLives = 0;
 	DataUpdated();
 }
 

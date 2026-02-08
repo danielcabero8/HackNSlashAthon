@@ -11,6 +11,14 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
+void AHackNSlashAthonCharacter::BeginDestroy()
+{
+	Super::BeginDestroy();
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+}
+
+
 AHackNSlashAthonCharacter::AHackNSlashAthonCharacter()
 {
 	// Set size for player capsule

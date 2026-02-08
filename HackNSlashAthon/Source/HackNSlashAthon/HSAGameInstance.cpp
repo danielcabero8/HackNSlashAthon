@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "HackNSlashAthonCharacter.h"
 
 #include "HackNSlashAthonGameMode.h"
 #include "HSAAICharacter.h"
@@ -56,17 +57,29 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 		bool GroundVisibility = true;
 
 		const EHSAEntityType EntityType = static_cast<EHSAEntityType>(LevelMap[i].EntityId);
+
+		FVector SpawnLocation = Tile->GetActorLocation();
+		// Tile start location is bottom left of the box. Z should be box height
+		SpawnLocation.Z += Tile->GetSimpleCollisionHalfHeight() * 2;
+		
+		//reset player position
+		if ( EntityType == EHSAEntityType::PlayerStart )
+		{
+			auto player = GetFirstLocalPlayerController();
+			if ( AHackNSlashAthonCharacter* pawn = Cast<AHackNSlashAthonCharacter>(player->GetPawn()))
+			{
+				SpawnLocation.Z += 1500;
+				pawn->SetActorLocation(SpawnLocation );
+			};
+			continue;
+		}
 		
 		auto SpawnConfigItem = CurrentGameMode->GetSpawnConfiguration(EntityType);
 		if (SpawnConfigItem == nullptr) {
 			continue;
 		}
-
-		FVector SpawnLocation = Tile->GetActorLocation();
-		// Tile start location is bottom left of the box. Z should be box height
-		SpawnLocation.Z += Tile->GetSimpleCollisionHalfHeight() * 2;
+		
 		SpawnLocation.Z += SpawnConfigItem->ActorOffsetZ;
-
 
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -105,7 +118,6 @@ void UHSAGameInstance::PopulateLevel(const TArray<FHSAMapTileContent>& LevelMap)
 
 		staticMeshComp->SetVisibility(GroundVisibility);
 		staticMeshComp->SetCollisionEnabled(CollisionType);
-		
 	}
 }
 

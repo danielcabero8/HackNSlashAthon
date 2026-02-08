@@ -108,6 +108,9 @@ public:
 	void HitPlayer();
 
 	UFUNCTION(BlueprintCallable)
+	void KillPlayer();
+	
+	UFUNCTION(BlueprintCallable)
 	void EnemyKilled(AActor* Enemy);
 
 	static bool IsEnemy(const EHSAEntityType EntityType);
