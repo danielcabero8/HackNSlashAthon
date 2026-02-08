@@ -24,8 +24,8 @@ void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 	}
 
 	SystemPrompt = TEXT(
-		"You are a game level generator. The game is a top down hack n slash game, where the layout is tile based in rows and columns MxN. "
-		"Your job is to decide what is the layout MxN that the next level will have. The information in each entry of MxN defines what entity spawns in that tile. "
+		"You are a game level generator. The game is a top down hack n slash game, where the layout is tile based in rows and columns 10x10. "
+		"Your job is to decide what is the layout 10x10that the next level will have. The information in each entry of MxN defines what entity spawns in that tile. "
 
 		"Assumptions: "
 		"> Floor is always spawned underneath every tile, UNLESS you decide the tile is \"Hole\". If you decide Floor, it will only spawn a floor tile, with no other entity above. "
@@ -37,10 +37,8 @@ void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 		"\"CompletedLevel\" (integer) - the current level that the player has completed. "
 		"\"Time\" (float) - the time in seconds that the player took to complete the level. "
 		"\"HitsTaken\" (integer) - how many hits the player has taken before completing the level. The player starts with 3 lives. If \"HitsTaken\" is 0, it means they completed the level with 3 lives still. If \"HitsTaken\" is 2 it means they completed the level with 1 life left, only 1 hit away from Game Over. "
-		"\"Rows\" (integer) - the number of rows in the grid. "
-		"\"Columns\" (integer) - the number of columns in the grid. "
 		"Example user prompt: "
-		"{\"CompletedLevel\":1,\"Time\":32.5,\"HitsTaken\":1,\"Rows\":5,\"Columns\":5} "
+		"{\"CompletedLevel\":1,\"Time\":32.5,\"HitsTaken\":1} "
 
 		"Entity definitions (ordered by category): "
 		"Category: GENERAL - general entity types with different functionality. "
@@ -53,21 +51,48 @@ void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 		"  Spikes = 21: A trap that damages the player on contact. "
 		"Category: ENVIRONMENT - obstacles that can act as cover for the player and give variety to the level. "
 		"  Column = 31: A tall column that blocks movement and projectiles. "
+		"  Rock = 32: A rock that block movement and projectiles"
 
 		"Constraints: "
 		"> Every level must contain exactly one PlayerStart tile (EntityId 3). "
+		"> Every level must contain at least 2 Enemies tile (EnemyId 11)."
 		"> Tile indices are 0-based in row-major order: index 0 is top-left, index Columns-1 is top-right, index Columns is second row first tile, etc. Total tiles = Rows * Columns. "
 		"> MovementSpeed, AttackCadence, and BulletSpeed are only relevant for ENEMY entities. "
+
+		"Environment inspirations:"
+		"Column placement patterns (EntityId 31) for 10x10 grid:"
+		"> Pattern A - Corner Guards: Use indices [0, 9, 90, 99]"
+		"> Pattern B - Central Square: Use indices [33, 36, 63, 66]"
+		"> Pattern C - Temple Corridor Left: Use indices [20, 22, 24, 50, 52, 54]"
+		"> Pattern D - Temple Corridor Right: Use indices [25, 27, 29, 55, 57, 59]"
+		"> Pattern E - Scattered Cover: Choose 4-6 from [11, 18, 31, 38, 61, 68, 81, 88] ensuring no adjacent placements"
+		"> Pattern F - Perimeter Defense: Use indices [1, 8, 91, 98] (one tile inward from corners)"
+
+		"CRITICAL: ONLY use the exact indices listed above for column placement. Do not calculate new positions."
+		"> Choose one pattern per level for visual consistency"
+		"> Rocks (EntityId 32) can be placed anywhere, try not to add them next to columns (EntityId 31)"
 
 		"Win and game conditions: "
 		"> The player wins a level by killing all enemies in the level. "
 		"> The game has no final end - the goal is to see how many levels the player can beat before getting Game Over. "
 
+		"Difficulty scaling guidelines:"
+		"> Base enemies = 2 + (CompletedLevel / 2, rounded down)"
+		"> If Time < 20 seconds: add 1 extra enemy"
+		"> If HitsTaken == 0: add 1 trap or enemy"
+		"> If HitsTaken >= 2: reduce enemies by 1 (min 2)"
+
 		"Balancing baseline - the first level (easiest) should consist of: "
 		"> 2 enemies "
-		"> 1 environment "
-		"> 5 holes "
+		"> 4 environment "
+		"> 3 holes "
 		"> All remaining tiles default to Floor. "
+
+		"Validation (critical):"
+		"> PlayerStart must NOT be adjacent to Holes or Spikes"
+		"> PlayerStart must NOT be on same tile as enemy"
+		"> Enemies must NOT spawn on Holes"
+		"> Do not surround PlayerStart or any Enemy with impassable tiles (Holes, Columns, Rocks)"
 
 		"Response format (IMPORTANT - use sparse format to minimize tokens): "
 		"Respond with ONLY valid JSON, no extra text or markdown. "
@@ -76,7 +101,8 @@ void UHSALevelGeneration::Initialize(FSubsystemCollectionBase& Collection)
 		"For non-enemy tiles: the value is just the EntityId as a number. "
 		"For enemy tiles: the value is an array [EntityId, MovementSpeed, AttackCadence, BulletSpeed]. "
 		"Example response for a 5x5 grid: "
-		"{\"M\":{\"0\":1,\"3\":[11,300.0,1.5,800.0],\"7\":3,\"12\":1,\"18\":21,\"22\":31}}"
+
+		"{\"M\":{\"0\":31,\"9\":31,\"90\":31,\"99\":31,\"44\":3,\"25\":[11,250.0,2.0,600.0],\"74\":[11,250.0,2.0,600.0],\"15\":1,\"84\":1,\"50\":1,\"45\":32,\"55\":32}}"
 	);
 }
 
@@ -130,8 +156,7 @@ void UHSALevelGeneration::GenerateLevel(const FHSALevelGenerationData& Data)
 		PromptJson->SetNumberField(TEXT("CompletedLevel"), Data.CompletedLevel);
 		PromptJson->SetNumberField(TEXT("Time"), Data.TimeTaken);
 		PromptJson->SetNumberField(TEXT("HitsTaken"), Data.HitsTaken);
-		PromptJson->SetNumberField(TEXT("Rows"), Data.Rows);
-		PromptJson->SetNumberField(TEXT("Columns"), Data.Columns);
+
 
 		FString PromptString;
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PromptString);
