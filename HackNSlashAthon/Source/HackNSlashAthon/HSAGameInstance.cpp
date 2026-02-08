@@ -169,33 +169,6 @@ void UHSAGameInstance::SpawnAndPossessController(AHSAAICharacter* Pawn, TSubclas
 	SpawnedController->Possess(Pawn);
 }
 
-void UHSAGameInstance::SpawnAndPossessController(AHSAAICharacter* Pawn, TSubclassOf<AAIController> ControllerClass)
-{
-	if (!Pawn || Pawn->IsPendingKillPending())
-	{
-		return;
-	}
-
-	UWorld* World = Pawn->GetWorld();
-	if (!World)
-	{
-		return;
-	}
-
-	FActorSpawnParameters Params;
-	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	AAIController* SpawnedController = World->SpawnActor<AAIController>(ControllerClass, Pawn->GetActorLocation(), Pawn->GetActorRotation(), Params);
-	if (!SpawnedController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SpawnAndPossessController: Failed to spawn controller for pawn %s."), *GetNameSafe(Pawn));
-		Pawn->Destroy(); // Clean up the pawn if we can't control it
-		return;
-	}
-
-	SpawnedController->Possess(Pawn);
-}
-
 void UHSAGameInstance::CleanLevel()
 {
 	for (auto Actor : SpawnedActors)
